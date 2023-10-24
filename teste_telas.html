@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CropCast</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 1;
+        }
+
+        .nav-container a {
+            width: auto;
+            height: auto;
+            margin-right: 10px;
+            margin-left: 10px;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            line-height: 20px;
+            font-size: 16px;
+            padding: 5px 10px;
+        }
+
+        .nav-container .inicio {
+            background-color: green;
+        }
+
+        .nav-container .previsao {
+            background-color: transparent;
+            margin-left: 0px;
+        }
+
+        .nav-container a.active {
+            background-color: transparent;
+            margin-left: 60px;
+        }
+
+        .line {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 30px;
+            background-color: white;
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #ffffff;
+            font-size: 30px;
+        }
+
+        .content input {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 200px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .content button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .second-screen {
+            display: none;
+            text-align: center;
+            margin-top: 150px;
+        }
+
+        .second-screen h2 {
+            color: #ffffff;
+            font-size: 40px;
+        }
+
+        .second-screen .input-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .second-screen input {
+            padding: 10px;
+            margin-right: 10px;
+            width: 200px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .second-screen .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .second-screen .button-container button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            margin: 10px;
+            width: 200px;
+        }
+
+        .second-screen .button-container button:hover {
+            background-color: #45a049;
+        }
+
+        .weather-info {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 24px;
+            color: #ffffff;
+        }
+
+        .weather-info p {
+            margin-bottom: 10px;
+        }
+
+        .weather-info p span {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .dot-container {
+            position: fixed;
+            top: 50%;
+            right: 8px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 1;
+        }
+
+        .dot {
+            width: 15px;
+            height: 15px;
+            margin-bottom: 10px;
+            border-radius: 50%;
+            background-color: green;
+        }
+
+        .active {
+            background-color: orange;
+        }
+
+        .nav-container h1 {
+            font-size: 60px;
+            margin: 0;
+            padding: 0;
+        }
+
+        #cultureResult {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 24px;
+            color: #ffffff;
+        }
+
+
+        .background-image-inicio {
+            background-image: url('imagem_inicio.png');
+            background-size: cover;
+        }
+
+        .background-image-previsao {
+            background-image: url('imagem_previsao.png');
+            background-size: cover;
+        }
+
+        .background-image-culturas {
+            background-image: url('imagem_culturas.png');
+            background-size: cover;
+        }
+
+        #page3Text {
+            font-family: Arial, sans-serif;
+            background-image: url('imagem_culturas.png');
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .column {
+            width: 20%;
+            /* Define 5 colunas */
+            float: left;
+            /* Alinha as colunas lado a lado */
+            padding: 10px;
+            /* Espaçamento entre as colunas */
+        }
+
+        .quadro {
+            border: 4px solid #ED9200;
+            border-radius: 10px;
+            width: 100%;
+            height: 200px;
+            margin: 0 15px 15px 0;
+            text-align: center;
+            overflow: hidden;
+            float: left;
+            position: relative;
+            /* Importante para posicionamento absoluto do texto */
+        }
+
+        .center-quadros {
+            display: flex;
+            justify-content: center;
+            /* Centraliza horizontalmente */
+            align-items: center;
+            /* Centraliza verticalmente */
+            height: 100vh;
+            /* Define a altura da div para ocupar a altura da janela */
+        }
+
+
+        .quadro img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .quadro .texto {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            /* Adicione essa linha para definir a cor do texto como branco */
+            background: none;
+            padding: 10px;
+            font-size: 25px;
+            border-radius: 5px;
+
+        }
+
+        .quadro .texto a {
+            text-decoration: none;
+            /* Remove o sublinhado padrão */
+            color: white;
+            /* Define a cor do texto do link como branco */
+            transition: color 0.3s;
+            /* Adiciona uma transição de cor suave */
+        }
+
+        .quadro .texto a:hover {
+            color: white;
+            /* Define a cor do texto do link como laranja ao passar o mouse */
+        }
+
+        .quadro .texto::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: white;
+            bottom: 0;
+            left: 0;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .quadro .texto:hover::after {
+            transform: scaleX(1);
+        }
+
+        .quadro img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .background-image-origem {
+            background-image: url('imagem_origem2.jpeg');
+            background-size: cover;
+        }
+
+        #page4Text {
+            font-size: 20px;
+            font-family: helvetica, sans-serif;
+            text-align: justify;
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-image background-image-inicio"></div>
+    <div class="nav-container">
+        <h1 style="color: white; margin-left: 10px;">CropCast</h1>
+        <a class="active inicio" href="#" onclick="showFirstScreen()">Início</a>
+        <a class="previsao" href="#" onclick="showSecondScreen()">Previsão</a>
+        <a class="culturas" href="#" onclick="showPage3()">Culturas</a>
+        <a class="origem" href="#" onclick="showPage4()">Origem</a>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="content">
+        <h2>Bem-vindo à CropCast!</h2>
+        <input type="text" id="nameInput" placeholder="Digite o seu nome">
+        <br>
+        <button onclick="saveName()">Salvar</button>
+        <p id="welcomeMessage"></p>
+    </div>
+
+    <div class="second-screen">
+        <h2>Obter Previsão</h2>
+        <div class="input-container">
+            <input type="text" id="locationInput" placeholder="Digite a cidade e país">
+        </div>
+        <div class="button-container">
+            <button onclick="getWeatherForecast()">Obter Previsão</button>
+            <button id="getCultureButton" onclick="getRandomCulture()">Obter Cultura</button>
+        </div>
+        <p id="cultureResult"></p>
+        <div class="weather-info" id="weatherInfo"></div>
+        <div id="currentDate"></div>
+    </div>
+    <div class="page3" style="display: none;">
+        <div class="center-quadros">
+            <div class="column centered-column">
+                <div class="quadro">
+                    <img src="imagem_laranja.jpg" alt="Imagem de Exemplo 1">
+                    <div class="texto sem-borda"><a href="Laranja/">Laranja</a></div>
+                </div>
+                <div class="quadro">
+                    <img src="imagem_feijao.jpg" alt="Imagem de Exemplo 2">
+                    <div class="texto sem-borda"><a href="Feijao">Feijão</a></div>
+                </div>
+            </div>
+            <div class="column centered-column">
+                <div class="quadro">
+                    <img src="imagem_algodao.jpg" alt="Imagem de Exemplo 3">
+                    <div class="texto sem-borda"><a href="Algodao">Algodão</a></div>
+                </div>
+                <div class="quadro">
+                    <img src="imagem_trigo.jpg" alt="Imagem de Exemplo 4">
+                    <div class="texto sem-borda"><a href="Trigo">Trigo</a></div>
+                </div>
+            </div>
+            <div class="column centered-column">
+                <div class="quadro">
+                    <img src="imagem_banana2.jpg" alt="Imagem de Exemplo 5">
+                    <div class="texto sem-borda"><a href="Banana">Banana</a></div>
+                </div>
+                <div class="quadro">
+                    <img src="imagem_acucar.jpg" alt="Imagem de Exemplo 6">
+                    <div class="texto sem-borda"><a href="Cana">Cana-de-açúcar</a></div>
+                </div>
+            </div>
+            <div class="column centered-column">
+                <div class="quadro">
+                    <img src="imagem_cafe.jpg" alt="Imagem de Exemplo 7">
+                    <div class="texto sem-borda"><a href="Cafe">Café</a></div>
+                </div>
+                <div class="quadro">
+                    <img src="imagem_soja.jpg" alt="Imagem de Exemplo 8">
+                    <div class="texto sem-borda"><a href="Soja">Soja</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page4" style="display: none;">
+        <div class="page4">
+            <h2>Sobre Nós</h2>
+            <div class="content4">
+                <p id="page4Text" class="page4-text"></p>
+            </div>
+        </div>
+    </div>
+    <div class="dot-container">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            var nameInput = document.getElementById('nameInput');
+            var savedName = localStorage.getItem('savedName');
+
+            if (savedName) {
+                nameInput.value = savedName;
+            }
+        }
+
+        function saveName() {
+            var nameInput = document.getElementById('nameInput');
+            var name = nameInput.value;
+
+            localStorage.setItem('savedName', name);
+
+            var welcomeMessage = document.getElementById('welcomeMessage');
+            welcomeMessage.textContent = "Bem-vindo, " + name + "!";
+
+            updateActiveDot(1);
+        }
+
+        function getWeatherForecast() {
+            var locationInput = document.getElementById('locationInput');
+            var location = locationInput.value;
+
+            var cityCountry = location.trim();
+
+            var city, country;
+            if (cityCountry.includes(',')) {
+                var parts = cityCountry.split(',');
+                city = parts[0].trim();
+                country = parts[1].trim();
+            } else {
+                city = cityCountry;
+                country = '';
+            }
+
+            var weatherInfo = document.getElementById('weatherInfo');
+            weatherInfo.innerHTML = '';
+
+            var apiKey = 'fdcdf53115b793ef830790d926052f4e';
+
+            var url = 'https://api.openweathermap.org/data/2.5/weather?q=' + city + ',' + country + '&appid=' + apiKey + '&lang=pt';
+
+            function traduzirClima(climaEmIngles) {
+                switch (climaEmIngles) {
+                    case "Thunderstorm":
+                        return "Tempestade";
+                    case "Drizzle":
+                        return "Garoa";
+                    case "Rain":
+                        return "Chuva";
+                    case "Snow":
+                        return "Neve";
+                    case "Clear":
+                        return "Céu Limpo";
+                    case "Clouds":
+                        return "Nublado";
+                    case "Mist":
+                        return "Nevoeiro";
+                    case "Fog":
+                        return "Nevoeiro";
+                    case "Haze":
+                        return "Nevoeiro";
+                    case "Dust":
+                        return "Poeira";
+                    case "Smoke":
+                        return "Fumaça";
+                    default:
+                        return climaEmIngles;
+                }
+            }
+
+            fetch(url)
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    var weatherData = data.weather[0];
+                    var temperature = Math.round(data.main.temp - 273.15);
+                    var humidity = data.main.humidity;
+                    var windSpeed = data.wind.speed;
+
+                    var weatherInfo = document.getElementById('weatherInfo');
+                    weatherInfo.innerHTML = '';
+
+                    var p1 = document.createElement('p');
+                    p1.innerHTML = '<span>Clima:</span> ' + traduzirClima(weatherData.main);
+                    weatherInfo.appendChild(p1);
+
+                    var p2 = document.createElement('p');
+                    p2.innerHTML = '<span>Descrição:</span> ' + traduzirClima(weatherData.description);
+                    weatherInfo.appendChild(p2);
+
+                    var p3 = document.createElement('p');
+                    p3.innerHTML = '<span>Temperatura:</span> ' + temperature + '°C';
+                    weatherInfo.appendChild(p3);
+
+                    var p4 = document.createElement('p');
+                    p4.innerHTML = '<span>Umidade:</span> ' + humidity + '%';
+                    weatherInfo.appendChild(p4);
+
+                    var p5 = document.createElement('p');
+                    p5.innerHTML = '<span>Velocidade do Vento:</span> ' + windSpeed + ' m/s';
+                    weatherInfo.appendChild(p5);
+
+                    var currentDate = document.getElementById('currentDate');
+                    currentDate.textContent = 'Previsão atualizada em: ' + new Date().toLocaleString();
+
+                    updateActiveDot(2);
+                })
+                .catch(function (error) {
+                    console.log('Error:', error);
+                });
+        }
+
+        function getRandomCulture() {
+            const cultures = ["laranja", "algodão", "banana", "café", "feijão", "trigo", "cana-de-açúcar", "soja"];
+            const randomIndex = Math.floor(Math.random() * cultures.length);
+            const randomCulture = cultures[randomIndex];
+            const cultureResult = document.getElementById('cultureResult');
+            cultureResult.textContent = `Cultura Escolhida: ${randomCulture}`;
+            cultureResult.style.display = 'block';
+        }
+
+        function showFirstScreen() {
+            var background = document.querySelector('.background-image');
+            background.classList.remove('background-image-culturas');
+            background.classList.remove('background-image-previsao');
+            background.classList.remove('background-image-origem');
+            background.classList.add('background-image-inicio');
+            var primeiraTela = document.querySelector('.content');
+            var segundaTela = document.querySelector('.second-screen');
+            var page3 = document.querySelector('.page3');
+            var page4 = document.querySelector('.page4');
+            primeiraTela.style.display = 'block';
+            segundaTela.style.display = 'none';
+            page3.style.display = 'none';
+            page4.style.display = 'none';
+            updateActiveDot(1);
+        }
+
+
+        function showSecondScreen() {
+            var background = document.querySelector('.background-image');
+            background.classList.remove('background-image-inicio');
+            background.classList.remove('background-image-culturas');
+            background.classList.remove('background-image-origem');
+            background.classList.add('background-image-previsao');
+            var primeiraTela = document.querySelector('.content');
+            var segundaTela = document.querySelector('.second-screen');
+            var page3 = document.querySelector('.page3');
+            var page4 = document.querySelector('.page4');
+            primeiraTela.style.display = 'none';
+            segundaTela.style.display = 'block';
+            page3.style.display = 'none';
+            page4.style.display = 'none';
+            updateActiveDot(2);
+        }
+
+        function showPage3() {
+            var background = document.querySelector('.background-image');
+            background.classList.remove('background-image-inicio');
+            background.classList.remove('background-image-previsao');
+            background.classList.remove('background-image-origem');
+            background.classList.add('background-image-culturas');
+            var primeiraTela = document.querySelector('.content');
+            var segundaTela = document.querySelector('.second-screen');
+            var page3 = document.querySelector('.page3');
+            var page4 = document.querySelector('.page4');
+            primeiraTela.style.display = 'none';
+            segundaTela.style.display = 'none';
+            page3.style.display = 'block';
+            page4.style.display = 'none';
+            updateActiveDot(3);
+        }
+        function showPage4() {
+            var background = document.querySelector('.background-image');
+            background.classList.remove('background-image-inicio');
+            background.classList.remove('background-image-previsao');
+            background.classList.remove('background-image-culturas');
+            background.classList.add('background-image-origem');
+            var primeiraTela = document.querySelector('.content');
+            var segundaTela = document.querySelector('.second-screen');
+            var page3 = document.querySelector('.page3');
+            var page4 = document.querySelector('.page4');
+            primeiraTela.style.display = 'none';
+            segundaTela.style.display = 'none';
+            page3.style.display = 'none';
+            page4.style.display = 'block';
+            updateActiveDot(4);
+
+            var page4Text = document.getElementById('page4Text');
+            page4Text.innerHTML = "A CropCast (crop - cultivo + cast - forecast) nasceu com a intenção de ajudar os agricultores no processo de cultivo, oferecendo diferentes dados atrelados à região. As informações incluem a cultura ideal de plantio com base nas condições climáticas do local. <br>Essa iniciativa faz parte da 20ª Semana Nacional de Ciência e Tecnologia, um evento do Governo Federal. A edição de 2023 conta com o tema “Ciências Básicas para o Desenvolvimento Sustentável”. <br>Nosso time é composto por nove estudantes do curso de Administração (ADM0121) do IFNMG - Campus Almenara. :)";
+        }
+
+        function updateActiveDot(index) {
+            var dots = document.getElementsByClassName('dot');
+
+            for (var i = 0; i < dots.length; i++) {
+                dots[i].classList.remove('active');
+            }
+
+            dots[index - 1].classList.add('active');
+
+        }
+    </script>
+</body>
+
+</html>
